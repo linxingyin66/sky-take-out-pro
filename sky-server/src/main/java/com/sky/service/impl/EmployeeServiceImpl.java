@@ -3,9 +3,14 @@ package com.sky.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
+import com.sky.constant.PasswordConstant;
 import com.sky.constant.StatusConstant;
+import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
+import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
 import com.sky.exception.AccountLockedException;
 import com.sky.exception.AccountNotFoundException;
@@ -16,6 +21,7 @@ import com.sky.result.Result;
 import com.sky.service.EmployeeService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
@@ -24,7 +30,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper,Employee> implements EmployeeService {
+public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     private EmployeeMapper employeeMapper;
@@ -40,9 +46,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper,Employee> im
         String password = employeeLoginDTO.getPassword();
 
         //1、根据用户名查询数据库中的数据
-        LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Employee::getUsername,username);
-        Employee employee = employeeMapper.selectOne(queryWrapper);
+        Employee employee = employeeMapper.getByUsername(username);
 
         //2、处理各种异常情况（用户名不存在、密码不对、账号被锁定）
         if (employee == null) {
@@ -70,48 +74,49 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper,Employee> im
     }
 
     /**
-     * @param employee
+     * @param employeeDTO
      * @return Result<String>
      * @Author LXY
      * @Description 新增员工
      * @Date 2023/9/12
      **/
     @Override
-    public Result saveEmp(Employee employee) {
+    public void save(EmployeeDTO employeeDTO) {
+        Employee employee = new Employee();
+        //对象属性拷贝
+        BeanUtils.copyProperties(employeeDTO, employee);
+        //设置账号的状态，默认正常状态 1表示正常 0表示锁定
+        employee.setStatus(StatusConstant.ENABLE);
+        //设置密码，默认密码123456
+        employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
+        //设置当前记录的创建时间和修改时间
+        //employee.setCreateTime(LocalDateTime.now());
+        //employee.setUpdateTime(LocalDateTime.now());
+        //设置当前记录创建人id和修改人id
+        //employee.setCreateUser(BaseContext.getCurrentId());
+        //employee.setUpdateUser(BaseContext.getCurrentId());
         employeeMapper.insert(employee);
-        return Result.success();
     }
 
     /**
-     * @param page
-     * @param pageSize
-     * @param name
-     * @return PageResult
-     * @Author LXY
-     * @Description 员工信息分页查询
-     * @Date 2023/9/12
-     **/
+     * 分页查询
+     *
+     * @param employeePageQueryDTO
+     * @return
+     */
+
     @Override
-    public Result<PageResult> page(int page, int pageSize, String name) {
-        log.info("page = {},pageSize = {},name = {}" ,page,pageSize,name);
+    public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
+        // select * from employee limit 0,10
+        //开始分页查询
+        PageHelper.startPage(employeePageQueryDTO.getPage(), employeePageQueryDTO.getPageSize());
 
-        //构造分页构造器
-        Page<Employee> pageInfo = new Page<>(page,pageSize);
+        Page<Employee> page = employeeMapper.pageQuery(employeePageQueryDTO);
 
-        //构造条件构造器
-        LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper();
-        //添加过滤条件
-        queryWrapper.like(StringUtils.isNotEmpty(name),Employee::getName,name);
-        //添加排序条件
-        queryWrapper.orderByDesc(Employee::getUpdateTime);//按照降序
+        long total = page.getTotal();
+        List<Employee> records = page.getResult();
 
-        //执行查询
-        Page<Employee> selectPage = employeeMapper.selectPage(pageInfo, queryWrapper);
-
-        long total = selectPage.getTotal();
-        List<Employee> records = selectPage.getRecords();
-
-        return Result.success(new PageResult(total,records));
+        return new PageResult(total, records);
     }
 
     /**
@@ -122,15 +127,19 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper,Employee> im
      * @Description 启用/禁用员工
      * @Date 2023/9/12
      **/
-    @Override
-    public Result startOrStop(int status, long id) {
+    public void startOrStop(Integer status, Long id) {
+        // update employee set status = ? where id = ?
 
-        Employee employee = new Employee();
-        employee.setId(id);
+        /*Employee employee = new Employee();
         employee.setStatus(status);
+        employee.setId(id);*/
 
-        employeeMapper.updateById(employee);
-        return Result.success();
+        Employee employee = Employee.builder()
+                .status(status)
+                .id(id)
+                .build();
+
+        employeeMapper.update(employee);
     }
 
     /**
