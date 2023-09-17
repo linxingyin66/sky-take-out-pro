@@ -1,5 +1,6 @@
 package com.sky.controller.user;
 
+import com.sky.constant.StatusConstant;
 import com.sky.entity.Setmeal;
 import com.sky.result.Result;
 import com.sky.service.SetmealService;
@@ -34,7 +35,11 @@ public class SetmealController {
     @Cacheable(cacheNames = "setmealCache",key = "#categoryId") //key: setmealCache::100
     public Result<List<Setmeal>> list(Long categoryId) {
 
-        List<Setmeal> list = setmealService.list(categoryId);
+        Setmeal setmeal = new Setmeal();
+        setmeal.setCategoryId(categoryId);
+        setmeal.setStatus(StatusConstant.ENABLE);
+
+        List<Setmeal> list = setmealService.list(setmeal);
         return Result.success(list);
     }
 
@@ -50,5 +55,4 @@ public class SetmealController {
         List<DishItemVO> list = setmealService.getDishItemById(id);
         return Result.success(list);
     }
-
 }

@@ -8,8 +8,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 
 @RestController("userCategoryController")
@@ -27,8 +27,8 @@ public class CategoryController {
      */
     @GetMapping("/list")
     @ApiOperation("查询分类")
-    public Result<List<Category>> list(@RequestParam(required = false) Integer type) {
-        List<Category> list = categoryService.listCategory(type);
+    public Result<List<Category>> list(Integer type) {  //不传type类型，则查全部(包括菜品和套餐)
+        List<Category> list = categoryService.list(type);
         return Result.success(list);
     }
 }

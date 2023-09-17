@@ -2,8 +2,6 @@ package com.sky.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sky.constant.MessageConstant;
 import com.sky.dto.UserLoginDTO;
 import com.sky.entity.User;
@@ -28,7 +26,7 @@ import java.util.Map;
  **/
 @Service
 @Slf4j
-public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+public class UserServiceImpl implements UserService {
     //微信服务接口地址
     public static final String WX_LOGIN = "https://api.weixin.qq.com/sns/jscode2session";
 
@@ -52,9 +50,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
 
         //判断当前用户是否为新用户
-        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(User::getOpenid,openid);
-        User user = userMapper.selectOne(queryWrapper);
+        User user = userMapper.getByOpenid(openid);
 
         //如果是新用户，自动完成注册
         if(user == null){
@@ -69,6 +65,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return user;
     }
 
+
     /**
      * 调用微信接口服务，获取微信用户的openid
      * @param code
@@ -80,9 +77,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         map.put("appid",weChatProperties.getAppid());
         map.put("secret",weChatProperties.getSecret());
         map.put("js_code",code);
-        map.put("grant_type","authorization_code");
+        map.put("grant_type","authorization_code");  //授权类型，值固定
         String json = HttpClientUtil.doGet(WX_LOGIN, map);
-
+        //调用微信接口获取openid(用户唯一标识)
         JSONObject jsonObject = JSON.parseObject(json);
         String openid = jsonObject.getString("openid");
         return openid;
