@@ -13,13 +13,13 @@ spring:
       username: ${sky.datasource.username}
       password: ${sky.datasource.password}
 
-#mybatis:
-#  #mapper配置文件
-#  mapper-locations: classpath:mapper/*.xml
-#  type-aliases-package: com.sky.entity
-#  configuration:
-#    #开启驼峰命名
-#    map-underscore-to-camel-case: true
+mybatis:
+  #mapper配置文件
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.sky.entity
+  configuration:
+    #开启驼峰命名
+    map-underscore-to-camel-case: true
 
 
 logging:
@@ -68,16 +68,16 @@ sky:
     refundNotifyUrl: ${sky.wechat.refundNotifyUrl}
 
 
-mybatis-plus:
-  global-config:
-    db-config:
-      id-type: auto  #主键自增策略
-  type-aliases-package: com.sky.entity
-  #mapper配置文件
-  mapper-locations: classpath:mapper/*.xml
-  # 开启驼峰命名
-  configuration:
-    map-underscore-to-camel-case: true
+#mybatis-plus:
+#  global-config:
+#    db-config:
+#      id-type: auto  #主键自增策略
+#  type-aliases-package: com.sky.entity
+#  #mapper配置文件
+#  mapper-locations: classpath:mapper/*.xml
+#  # 开启驼峰命名
+#  configuration:
+#    map-underscore-to-camel-case: true
 
 sky-take-out:
     path: E:\Temp\img\
