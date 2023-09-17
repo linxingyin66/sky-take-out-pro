@@ -45,6 +45,7 @@ public class AddressBookController {
         return Result.success();
     }
 
+
     @GetMapping("/{id}")
     @ApiOperation("根据id查询地址")
     public Result<AddressBook> getById(@PathVariable Long id) {
@@ -109,5 +110,4 @@ public class AddressBookController {
 
         return Result.error("没有查询到默认地址");
     }
-
 }
