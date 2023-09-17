@@ -1,8 +1,5 @@
 package com.sky.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
@@ -17,10 +14,8 @@ import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
 import com.sky.result.PageResult;
-import com.sky.result.Result;
 import com.sky.service.EmployeeService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,6 +36,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @param employeeLoginDTO
      * @return
      */
+    @Override
     public Employee login(EmployeeLoginDTO employeeLoginDTO) {
         String username = employeeLoginDTO.getUsername();
         String password = employeeLoginDTO.getPassword();
@@ -120,13 +116,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     /**
+     * 启用禁用员工账号
+     *
      * @param status
      * @param id
-     * @return Result
-     * @Author LXY
-     * @Description 启用/禁用员工
-     * @Date 2023/9/12
-     **/
+     */
+    @Override
     public void startOrStop(Integer status, Long id) {
         // update employee set status = ? where id = ?
 
@@ -143,29 +138,32 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     /**
-     * @param id
-     * @return Result<Employee>
-     * @Author LXY
-     * @Description 根据id查询员工信息（修改员工信息时的数据信息回显）
-     * @Date 2023/9/12
-     **/
-    @Override
-    public Result<Employee> getEmpById(Long id) {
-
-        Employee employee = employeeMapper.selectById(id);
-        return Result.success(employee);
-    }
-
-    /**
-     * 修改员工信息
+     * 根据id查询员工
      *
-     * @param employee
+     * @param id
      * @return
      */
     @Override
-    public Result updateEmp(Employee employee) {
-        employeeMapper.updateById(employee);
-        return Result.success();
+    public Employee getById(Long id) {
+        Employee employee = employeeMapper.getById(id);
+        employee.setPassword("****");
+        return employee;
+    }
+
+    /**
+     * 编辑员工信息
+     *
+     * @param employeeDTO
+     */
+    @Override
+    public void update(EmployeeDTO employeeDTO) {
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO, employee);
+
+        //employee.setUpdateTime(LocalDateTime.now());
+        //employee.setUpdateUser(BaseContext.getCurrentId());
+
+        employeeMapper.update(employee);
     }
 
 }

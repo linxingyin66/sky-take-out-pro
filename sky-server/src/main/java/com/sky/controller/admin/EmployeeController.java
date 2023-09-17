@@ -1,7 +1,9 @@
 package com.sky.controller.admin;
 
 import com.sky.constant.JwtClaimsConstant;
+import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
+import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
 import com.sky.properties.JwtProperties;
 import com.sky.result.PageResult;
@@ -9,6 +11,7 @@ import com.sky.result.Result;
 import com.sky.service.EmployeeService;
 import com.sky.utils.JwtUtil;
 import com.sky.vo.EmployeeLoginVO;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -65,85 +68,75 @@ public class EmployeeController {
      * @return
      */
     @PostMapping("/logout")
+    @ApiOperation("员工退出")
     public Result<String> logout() {
         return Result.success();
     }
 
     /**
      * 新增员工
-     * @param employee
+     * @param employeeDTO
      * @return
      */
     @PostMapping
-    public Result saveEmp(@RequestBody Employee employee){
-
-        log.info("新增员工，员工信息：{}",employee.toString());
-
-        Result result = employeeService.saveEmp(employee);
-
-        return result;
+    @ApiOperation("新增员工")
+    public Result save(@RequestBody EmployeeDTO employeeDTO){
+        log.info("新增员工：{}",employeeDTO);
+        employeeService.save(employeeDTO);
+        return Result.success();
     }
 
     /**
-     * 员工信息分页查询
-     * @param page
-     * @param pageSize
-     * @param name
+     * 员工分页查询
+     * @param employeePageQueryDTO
      * @return
      */
     @GetMapping("/page")
-    public Result<PageResult> page(int page, int pageSize, String name){
-        log.info("page = {},pageSize = {},name = {}" ,page,pageSize,name);
-
-        Result<PageResult> result = employeeService.page(page, pageSize, name);
-        return result;
+    @ApiOperation("员工分页查询")
+    public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO){
+        log.info("员工分页查询，参数为：{}", employeePageQueryDTO);
+        PageResult pageResult = employeeService.pageQuery(employeePageQueryDTO);
+        return Result.success(pageResult);
     }
 
     /**
-     * @Author LXY
-     * @Description 根据id修改员工信息、启用/禁用员工
-     * @Date 2023/9/12
+     * 启用禁用员工账号
      * @param status
      * @param id
-     * @return Result
-     **/
-    @PostMapping ("/status/{status}")
-    public Result startOrStop(@PathVariable int status,long id){
-
-        Result result= employeeService.startOrStop(status,id);
-
-        return result;
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation("启用禁用员工账号")
+    public Result startOrStop(@PathVariable Integer status,Long id){
+        log.info("启用禁用员工账号：{},{}",status,id);
+        employeeService.startOrStop(status,id);
+        return Result.success();
     }
 
 
     /**
-     * @Author LXY
-     * @Description 根据id查询员工信息（修改员工信息时的数据信息回显）
-     * @Date 2023/9/12
+     * 根据id查询员工信息
      * @param id
-     * @return Result<Employee>
-     **/
+     * @return
+     */
     @GetMapping("/{id}")
-    public Result<Employee> getEmpById(@PathVariable Long id){
-        log.info("根据id查询员工信息...");
-
-        Result<Employee> result = employeeService.getEmpById(id);
-
-        return result;
+    @ApiOperation("根据id查询员工信息")
+    public Result<Employee> getById(@PathVariable Long id){
+        Employee employee = employeeService.getById(id);
+        return Result.success(employee);
     }
 
     /**
-     * 修改员工信息
-     * @param employee
+     * 编辑员工信息
+     * @param employeeDTO
      * @return
      */
     @PutMapping
-    public Result updateEmp(@RequestBody Employee employee){
-
-        Result result = employeeService.updateEmp(employee);
-
-        return result;
+    @ApiOperation("编辑员工信息")
+    public Result update(@RequestBody EmployeeDTO employeeDTO){
+        log.info("编辑员工信息：{}", employeeDTO);
+        employeeService.update(employeeDTO);
+        return Result.success();
     }
-
 
 }

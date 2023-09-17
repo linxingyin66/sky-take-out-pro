@@ -3,6 +3,8 @@ package com.sky.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.dto.CategoryDTO;
@@ -29,7 +31,7 @@ import java.util.List;
  */
 @Service
 @Slf4j
-public class CategoryServiceImpl extends ServiceImpl<CategoryMapper,Category> implements CategoryService {
+public class CategoryServiceImpl implements CategoryService {
 
     @Autowired
     private CategoryMapper categoryMapper;
@@ -42,13 +44,20 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper,Category> im
      * 新增分类
      * @param categoryDTO
      */
-    public void saveCategory(CategoryDTO categoryDTO) {
+    @Override
+    public void save(CategoryDTO categoryDTO) {
         Category category = new Category();
         //属性拷贝
         BeanUtils.copyProperties(categoryDTO, category);
 
         //分类状态默认为禁用状态0
         category.setStatus(StatusConstant.DISABLE);
+
+        //设置创建时间、修改时间、创建人、修改人
+        //category.setCreateTime(LocalDateTime.now());
+        //category.setUpdateTime(LocalDateTime.now());
+        //category.setCreateUser(BaseContext.getCurrentId());
+        //category.setUpdateUser(BaseContext.getCurrentId());
 
         categoryMapper.insert(category);
     }
@@ -58,49 +67,30 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper,Category> im
      * @param categoryPageQueryDTO
      * @return
      */
+    @Override
     public PageResult pageQuery(CategoryPageQueryDTO categoryPageQueryDTO) {
-
-        int page = categoryPageQueryDTO.getPage();
-        int pageSize = categoryPageQueryDTO.getPageSize();
-        String name = categoryPageQueryDTO.getName();
-        Integer type = categoryPageQueryDTO.getType();
-        //构造分页构造器
-        Page<Category> pageInfo = new Page<>(page,pageSize);
-        //构造条件构造器
-        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
-        //添加过滤条件
-        queryWrapper.like(StringUtils.isNotEmpty(name),Category::getName,name);
-        queryWrapper.eq(type != null,Category::getType,type);
-        //添加排序条件
-        queryWrapper.orderByAsc(Category::getSort).orderByDesc(Category::getUpdateTime);//按照降序
-
-        //执行查询
-        Page<Category> selectPage = categoryMapper.selectPage(pageInfo, queryWrapper);
-
-        long total = selectPage.getTotal();
-        List<Category> records = selectPage.getRecords();
-
-        return new PageResult(total,records);
-
+        PageHelper.startPage(categoryPageQueryDTO.getPage(),categoryPageQueryDTO.getPageSize());
+        //下一条sql进行分页，自动加入limit关键字分页
+        Page<Category> page = categoryMapper.pageQuery(categoryPageQueryDTO);
+        return new PageResult(page.getTotal(), page.getResult());
     }
+
 
     /**
      * 根据id删除分类
      * @param id
      */
-    public void deleteCategoryById(Long id) {
+    @Override
+    public void deleteById(Long id) {
         //查询当前分类是否关联了菜品，如果关联了就抛出业务异常
-        LambdaQueryWrapper<Dish> queryWrapper1 = new LambdaQueryWrapper<>();
-        queryWrapper1.eq(Dish::getCategoryId,id);
-        long count = dishMapper.selectCount(queryWrapper1);
+        Integer count = dishMapper.countByCategoryId(id);
         if(count > 0){
             //当前分类下有菜品，不能删除
             throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_DISH);
         }
+
         //查询当前分类是否关联了套餐，如果关联了就抛出业务异常
-        LambdaQueryWrapper<Setmeal> queryWrapper2 = new LambdaQueryWrapper<>();
-        queryWrapper2.eq(Setmeal::getCategoryId,id);
-        count = setmealMapper.selectCount(queryWrapper2);
+        count = setmealMapper.countByCategoryId(id);
         if(count > 0){
             //当前分类下有菜品，不能删除
             throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_SETMEAL);
