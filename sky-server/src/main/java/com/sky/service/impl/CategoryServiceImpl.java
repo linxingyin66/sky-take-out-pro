@@ -1,8 +1,5 @@
 package com.sky.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
@@ -10,8 +7,6 @@ import com.sky.constant.StatusConstant;
 import com.sky.dto.CategoryDTO;
 import com.sky.dto.CategoryPageQueryDTO;
 import com.sky.entity.Category;
-import com.sky.entity.Dish;
-import com.sky.entity.Setmeal;
 import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.CategoryMapper;
 import com.sky.mapper.DishMapper;
@@ -19,7 +14,6 @@ import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.CategoryService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -104,11 +98,16 @@ public class CategoryServiceImpl implements CategoryService {
      * 修改分类
      * @param categoryDTO
      */
-    public void updateCategory(CategoryDTO categoryDTO) {
+    @Override
+    public void update(CategoryDTO categoryDTO) {
         Category category = new Category();
         BeanUtils.copyProperties(categoryDTO,category);
 
-        categoryMapper.updateById(category);
+        //设置修改时间、修改人
+        //category.setUpdateTime(LocalDateTime.now());
+        //category.setUpdateUser(BaseContext.getCurrentId());
+
+        categoryMapper.update(category);
     }
 
     /**
@@ -116,12 +115,15 @@ public class CategoryServiceImpl implements CategoryService {
      * @param status
      * @param id
      */
+    @Override
     public void startOrStop(Integer status, Long id) {
         Category category = Category.builder()
                 .id(id)
                 .status(status)
+                //.updateTime(LocalDateTime.now())
+                //.updateUser(BaseContext.getCurrentId())
                 .build();
-        categoryMapper.updateById(category);
+        categoryMapper.update(category);
     }
 
     /**
@@ -129,10 +131,8 @@ public class CategoryServiceImpl implements CategoryService {
      * @param type
      * @return
      */
-    public List<Category> listCategory(Integer type) {
-        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(type != null,Category::getType,type);
-        List<Category> categoryList = categoryMapper.selectList(queryWrapper);
-        return categoryList;
+    @Override
+    public List<Category> list(Integer type) {
+        return categoryMapper.list(type);
     }
 }
