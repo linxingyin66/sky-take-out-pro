@@ -40,5 +40,4 @@ public interface WorkspaceService {
      * @return
      */
     SetmealOverViewVO getSetmealOverView();
-
 }

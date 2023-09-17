@@ -1,6 +1,5 @@
 package com.sky.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.sky.dto.GoodsSalesDTO;
 import com.sky.entity.Orders;
 import org.apache.ibatis.annotations.Mapper;
@@ -17,7 +16,7 @@ import java.util.Map;
  * @Date 2023/9/14 9:46
  **/
 @Mapper
-public interface OrderMapper extends BaseMapper<Orders> {
+public interface OrderMapper {
     /**
      * 插入订单数据
      * @param order

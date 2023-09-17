@@ -31,7 +31,6 @@ public class DishController {
 
     @Autowired
     private DishService dishService;
-
     @Autowired
     private RedisTemplate redisTemplate;
 
@@ -50,7 +49,6 @@ public class DishController {
         //清理缓存数据
         String key = "dish_" + dishDTO.getCategoryId();
         cleanCache(key);
-
         return Result.success();
     }
 
@@ -120,14 +118,15 @@ public class DishController {
 
     /**
      * 菜品起售停售
+     *
      * @param status
      * @param id
      * @return
      */
     @PostMapping("/status/{status}")
     @ApiOperation("菜品起售停售")
-    public Result<String> startOrStop(@PathVariable Integer status, Long id){
-        dishService.startOrStop(status,id);
+    public Result<String> startOrStop(@PathVariable Integer status, Long id) {
+        dishService.startOrStop(status, id);
 
         //将所有的菜品缓存数据清理掉，所有以dish_开头的key
         cleanCache("dish_*");
@@ -137,12 +136,13 @@ public class DishController {
 
     /**
      * 根据分类id查询菜品
+     *
      * @param categoryId
      * @return
      */
     @GetMapping("/list")
     @ApiOperation("根据分类id查询菜品")
-    public Result<List<Dish>> list(Long categoryId){
+    public Result<List<Dish>> list(Long categoryId) {
         List<Dish> list = dishService.list(categoryId);
         return Result.success(list);
     }

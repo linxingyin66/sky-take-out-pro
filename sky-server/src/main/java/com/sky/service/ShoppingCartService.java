@@ -1,6 +1,5 @@
 package com.sky.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.sky.dto.ShoppingCartDTO;
 import com.sky.entity.ShoppingCart;
 
@@ -12,7 +11,7 @@ import java.util.List;
  * @Author LXY
  * @Date 2023/9/14 8:39
  **/
-public interface ShoppingCartService extends IService<ShoppingCart> {
+public interface ShoppingCartService{
 
     /**
      * 添加购物车
@@ -27,7 +26,13 @@ public interface ShoppingCartService extends IService<ShoppingCart> {
     List<ShoppingCart> showShoppingCart();
 
     /**
-     * 清空购物车商品
+     * 清空购物车
      */
     void cleanShoppingCart();
+
+    /**
+     * 删除购物车中一个商品
+     * @param shoppingCartDTO
+     */
+    void subShoppingCart(ShoppingCartDTO shoppingCartDTO);
 }

@@ -1,6 +1,5 @@
 package com.sky.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.sky.entity.ShoppingCart;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
@@ -16,7 +15,7 @@ import java.util.List;
  * @Date 2023/9/14 8:42
  **/
 @Mapper
-public interface ShoppingCartMapper extends BaseMapper<ShoppingCart> {
+public interface ShoppingCartMapper {
     /**
      * 条件查询
      *

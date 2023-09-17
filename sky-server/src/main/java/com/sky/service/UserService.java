@@ -1,6 +1,5 @@
 package com.sky.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.sky.dto.UserLoginDTO;
 import com.sky.entity.User;
 
@@ -10,7 +9,7 @@ import com.sky.entity.User;
  * @Author LXY
  * @Date 2023/9/13 15:44
  **/
-public interface UserService extends IService<User> {
+public interface UserService {
 
     /**
      * 微信登录

@@ -1,8 +1,6 @@
 package com.sky.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.sky.dto.*;
-import com.sky.entity.Orders;
 import com.sky.result.PageResult;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
@@ -15,7 +13,7 @@ import com.sky.vo.OrderVO;
  * @Author LXY
  * @Date 2023/9/14 9:43
  **/
-public interface OrderService extends IService<Orders> {
+public interface OrderService{
 
     /**
      * 用户下单
@@ -36,12 +34,6 @@ public interface OrderService extends IService<Orders> {
      * @param outTradeNo
      */
     void paySuccess(String outTradeNo);
-
-    /**
-     * 用户催单
-     * @param id
-     */
-    void reminder(Long id);
 
     /**
      * 用户端订单分页查询
@@ -67,7 +59,6 @@ public interface OrderService extends IService<Orders> {
 
     /**
      * 再来一单
-     *
      * @param id
      */
     void repetition(Long id);
@@ -119,4 +110,10 @@ public interface OrderService extends IService<Orders> {
      * @param id
      */
     void complete(Long id);
+
+    /**
+     * 客户催单
+     * @param id
+     */
+    void reminder(Long id);
 }

@@ -1,7 +1,5 @@
 package com.sky.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.sky.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.Map;
@@ -13,7 +11,7 @@ import java.util.Map;
  * @Date 2023/9/13 15:49
  **/
 @Mapper
-public interface UserMapper extends BaseMapper<User> {
+public interface UserMapper {
 
     /**
      * 根据动态条件统计用户数量
