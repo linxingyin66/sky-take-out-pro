@@ -77,9 +77,6 @@ public class OrderServiceImpl implements OrderService {
             throw new AddressBookBusinessException(MessageConstant.ADDRESS_BOOK_IS_NULL);
         }
 
-        //检查用户的收货地址是否超出配送范围
-        //checkOutOfRange(addressBook.getCityName() + addressBook.getDistrictName() + addressBook.getDetail());
-
         Long userId = BaseContext.getCurrentId();
         ShoppingCart shoppingCart = new ShoppingCart();
         shoppingCart.setUserId(userId);
@@ -101,6 +98,7 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(Orders.PENDING_PAYMENT);
         order.setPayStatus(Orders.UN_PAID);
         order.setOrderTime(LocalDateTime.now());
+        order.setCheckoutTime(LocalDateTime.now());
 
         //向订单表插入1条数据
         orderMapper.insert(order);

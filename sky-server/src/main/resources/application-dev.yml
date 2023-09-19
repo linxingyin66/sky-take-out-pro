@@ -14,14 +14,14 @@ sky:
     database: 0
 
   alioss:
-    endpoint: oss-cn-beijing.aliyuncs.com
-    access-key-id: LTAI5tE9ZyKWFVn61oTghZkr
-    access-key-secret: 0GlObJMefGmSMzDgc1NE3mvDLUJSH6
-    bucket-name: sky-take-out-2023-9-12
+    endpoint: XXX
+    access-key-id: XXX
+    access-key-secret: XXX
+    bucket-name: XXX
 
   wechat:
-    appid: wx455bd98169383122
-    secret: 18cf1968dee4fcbc092214cd65c3a410
+    appid: XXX
+    secret: XXX
 
     mchid: 1561414331
     mchSerialNo: 4B3B3DC35414AD50B1B755BAF8DE9CC7CF407606

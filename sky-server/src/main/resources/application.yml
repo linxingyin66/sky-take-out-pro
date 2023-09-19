@@ -6,12 +6,48 @@ spring:
     active: dev
   main:
     allow-circular-references: true
-  datasource:
-    druid:
-      driver-class-name: ${sky.datasource.driver-class-name}
-      url: jdbc:mysql://${sky.datasource.host}:${sky.datasource.port}/${sky.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
-      username: ${sky.datasource.username}
-      password: ${sky.datasource.password}
+    allow-bean-definition-overriding: true
+#  datasource:
+#    druid:
+#      driver-class-name: ${sky.datasource.driver-class-name}
+#      url: jdbc:mysql://${sky.datasource.host}:${sky.datasource.port}/${sky.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+#      username: ${sky.datasource.username}
+#      password: ${sky.datasource.password}
+  sharding-sphere:
+    datasource:
+      names:
+        master,slave1,slave2
+      master:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3000/sky_take_out?serverTimezone=UTC&useSSL=false
+        username: root
+        password: 1111
+      slave1:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3001/sky_take_out?serverTimezone=UTC&useSSL=false
+        username: root
+        password: 1111
+      slave2:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3002/sky_take_out?serverTimezone=UTC&useSSL=false
+        username: root
+        password: 1111
+    masters-lave:
+        # 读写分离配置
+        load-balance-algorithm-type: round_robin  #从库轮询
+        # 最终的数据源名称
+        name: dataSource
+        # 主库数据源名称
+        master-data-source-name: master
+        # 从库数据源名称列表，多个逗号分隔
+        slave-data-source-names: slave1,slave2
+    props:
+        sql:
+          show: true #开启SQL显示，默认false
+
 
 mybatis:
   #mapper配置文件
